@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="text-center my-5">
+    <h1 class="display-4">Bienvenido a Viajes Aventura</h1>
+    <p class="lead">
+        Explora destinos únicos, crea recuerdos inolvidables y reserva tus próximas vacaciones con facilidad.
+    </p>
+    <a href="{{ url_for('auth.register') }}" class="btn btn-success btn-lg m-2">
+        Registrarse Ahora
+    </a>
+</div>
+
+<div class="row text-center mt-5">
+    <div class="col-md-4">
+        <div class="card shadow">
+            <img
+                class="card-img-top"
+                src="{{ url_for('static', filename='images/destination.jpg') }}"
+                alt="Destinos Increíbles"
+            />
+            <div class="card-body">
+                <h5 class="card-title">Destinos Increíbles</h5>
+                <p class="card-text">
+                    Descubre una variedad de lugares exóticos y emocionantes para tu próxima aventura.
+                </p>
+                <a href="{{ url_for('travel.destinations') }}" class="btn btn-primary">Ver Más</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow">
+            <img
+                class="card-img-top"
+                src="{{ url_for('static', filename='images/packages.jpg') }}"
+                alt="Paquetes Personalizados"
+            />
+            <div class="card-body">
+                <h5 class="card-title">Paquetes Personalizados</h5>
+                <p class="card-text">
+                    Combina destinos, fechas y actividades para crear el viaje perfecto.
+                </p>
+                <a href="{{ url_for('travel.packages') }}" class="btn btn-primary">Ver Más</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow">
+            <img
+                class="card-img-top"
+                src="{{ url_for('static', filename='images/booking.jpg') }}"
+                alt="Reserva Fácil"
+            />
+            <div class="card-body">
+                <h5 class="card-title">Reserva Fácil</h5>
+                <p class="card-text">
+                    Reserva tus viajes con unos pocos clics y disfruta de una experiencia sin complicaciones.
+                </p>
+                <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Reservar Ahora</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
