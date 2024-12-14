@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Editar Destino</h2>
+
+<form method="POST" action="{{ url_for('admin.edit_destination', id=destination.id) }}">
+    {{ form.hidden_tag() }}
+
+    <div class="form-group">
+        {{ form.name.label(class="form-label") }}
+        {{ form.name(class="form-control", value=destination.name) }}
+    </div>
+
+    <div class="form-group">
+        {{ form.description.label(class="form-label") }}
+        {{ form.description(class="form-control", value=destination.description) }}
+    </div>
+
+    <div class="form-group">
+        {{ form.activities.label(class="form-label") }}
+        {{ form.activities(class="form-control", value=destination.activities) }}
+    </div>
+
+    <div class="form-group">
+        {{ form.cost.label(class="form-label") }}
+        {{ form.cost(class="form-control", value=destination.cost) }}
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-success">Guardar Cambios</button>
+    </div>
+</form>
+
+{% endblock %}

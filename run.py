@@ -1,5 +1,5 @@
 from app import create_app, db
-from app.auth.models import User  # Esto debería funcionar ahora que los ciclos de importación han sido resueltos
+from app.auth.models import User  
 
 app = create_app()
 

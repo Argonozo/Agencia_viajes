@@ -28,11 +28,14 @@ def create_app():
     
     from app.travel.routes import travel
     app.register_blueprint(travel, url_prefix='/reserve')
+
+    from app.admin.routes import admin
+    app.register_blueprint(admin, url_prefix = '/admin')    
     
     # Ruta principal
     @app.route('/')
     def index():
-        return redirect(url_for('auth.register'))  # Redirigir al login si no está autenticado
+        return redirect(url_for('travel.home'))  # Redirigir al login si no está autenticado
     
 
     return app

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -17,7 +17,7 @@
       crossorigin="anonymous"
     />
 
-    <!-- Agregar estilo para el fondo -->
+    <!-- Estilos adicionales -->
     <style>
       body {
         background-image: url("{{ url_for('static', filename='images/bosqueywea.jpg') }}");
@@ -29,9 +29,8 @@
         font-family: Arial, sans-serif;
       }
 
-      /* Estilo opcional para el contenedor de contenido */
       .container {
-        background-color: rgba(255, 255, 255, 0.8);  /* Fondo blanco con algo de transparencia */
+        background-color: rgba(255, 255, 255, 0.8);
         padding: 20px;
         border-radius: 10px;
       }
@@ -41,31 +40,41 @@
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <button
-          class="navbar-toggler"
-          type="button"
-          data-toggle="collapse"
-          data-target="#navbar"
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbar"
       >
-          <span class="navbar-toggler-icon"></span>
+        <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbar">
-          <div class="navbar-nav">
-              <a class="nav-item nav-link" id="home" href="{{ url_for('travel.home') }}">Home</a>
-              {% if current_user.is_authenticated %}
-                  <a class="nav-item nav-link" id="packages" href="{{ url_for('travel.packages') }}">Paquetes</a>
-                  <a class="nav-item nav-link" id="destinations" href="{{ url_for('travel.destinations') }}">Destinos</a>
-                  <a class="nav-item nav-link" id="reserve" href="{{ url_for('travel.reserve') }}">Tus Reservas</a>
-                  <a class="nav-item nav-link" id="profile" href="{{ url_for('auth.profile') }}">Perfil</a>
-                  <a class="nav-item nav-link" id="logout" href="{{ url_for('auth.logout') }}">Cerrar sesión</a>
-              {% else %}
-                  <a class="nav-item nav-link" id="login" href="{{ url_for('auth.login') }}">Entrar</a>
-                  <a class="nav-item nav-link" id="signUp" href="{{ url_for('auth.register') }}">Registrarse</a>
-              {% endif %}
-          </div>
+        <div class="navbar-nav">
+          <a class="nav-item nav-link" id="home" href="{{ url_for('travel.home') }}">Home</a>
+          
+          {% if current_user.is_authenticated %}
+            <!-- Si es administrador, muestra las opciones del dashboard -->
+            {% if current_user.is_admin() %}
+              <a class="nav-item nav-link" id="profile" href="{{ url_for('auth.profile') }}">Perfil</a>
+              <a class="nav-item nav-link" id="admin" href="{{ url_for('admin.dashboard') }}">Panel de Administrador</a>
+              <a class="nav-item nav-link" id="users" href="{{ url_for('admin.users') }}">Gestor de Usuarios</a>
+              <a class="nav-item nav-link" id="destinations" href="{{ url_for('admin.manage_destinations') }}">Gestor de Destinos</a>
+              <a class="nav-item nav-link" id="packages" href="{{ url_for('admin.manage_packages') }}">Gestor de Paquetes</a>
+            {% else %}
+              <a class="nav-item nav-link" id="packages" href="{{ url_for('travel.packages') }}">Paquetes</a>
+              <a class="nav-item nav-link" id="destinations" href="{{ url_for('travel.destinations') }}">Destinos</a>
+              <a class="nav-item nav-link" id="reserve" href="{{ url_for('travel.reserve') }}">Tus Reservas</a>
+              <a class="nav-item nav-link" id="profile" href="{{ url_for('auth.profile') }}">Perfil</a>
+            {% endif %}
+            
+            <a class="nav-item nav-link" id="logout" href="{{ url_for('auth.logout') }}">Cerrar sesión</a>
+          {% else %}
+            <a class="nav-item nav-link" id="login" href="{{ url_for('auth.login') }}">Entrar</a>
+            <a class="nav-item nav-link" id="signUp" href="{{ url_for('auth.register') }}">Registrarse</a>
+          {% endif %}
+        </div>
       </div>
-  </nav>
-  
-
+    </nav>
+    
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         {% for category, message in messages %}
@@ -99,7 +108,7 @@
     ></script>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxwU9K/ScQsAP7HUbX39j7fakFPskvXusvfa0b4Q"
       crossorigin="anonymous"
     ></script>
     <script

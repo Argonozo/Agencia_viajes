@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Agregar Nuevo Destino</h2>
+
+<form method="POST" action="{{ url_for('admin.add_destination') }}">
+    {{ form.hidden_tag() }}
+    
+    <div class="form-group">
+        <label for="name">Nombre del Destino</label>
+        {{ form.name(class="form-control", id="name", placeholder="Ingrese el nombre del destino") }}
+    </div>
+
+    <div class="form-group">
+        <label for="description">Descripción</label>
+        {{ form.description(class="form-control", id="description", placeholder="Ingrese una descripción") }}
+    </div>
+
+    <div class="form-group">
+        <label for="activities">Actividades</label>
+        {{ form.activities(class="form-control", id="activities", placeholder="Ingrese las actividades disponibles") }}
+    </div>
+
+    <div class="form-group">
+        <label for="cost">Costo</label>
+        {{ form.cost(class="form-control", id="cost", placeholder="Ingrese el costo") }}
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-success">Agregar Destino</button>
+    </div>
+</form>
+
+{% endblock %}

@@ -10,13 +10,16 @@ auth = Blueprint('auth', __name__)
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        print("validacion depana")
+        print("validacion correcta")
         user = User.query.filter_by(email=form.email.data).first()  # Buscar por email
         if user and user.check_password(form.password.data):
             ## print(f"Usuario autenticado")
             login_user(user)
             flash('Inicio de sesión exitoso.', 'success')
-            return redirect(url_for('travel.reserve'))  # Redirigir a la vista correcta
+            #redirige segun el rol
+            if user.is_admin():
+                return redirect(url_for('admin.dashboard'))
+            return redirect(url_for('auth.profile'))  # Redirigir a la vista correcta
         else:
             flash('Nombre de usuario o contraseña incorrectos.', 'danger')
     return render_template('auth/login.html', form=form)

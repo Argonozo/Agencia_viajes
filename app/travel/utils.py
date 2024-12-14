@@ -1,4 +1,5 @@
 from app.travel.models import Destination, Package, Booking
+from app import db
 
 def get_available_packages(start_date, end_date):
     """

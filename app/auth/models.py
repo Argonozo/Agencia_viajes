@@ -24,3 +24,7 @@ class User(UserMixin, db.Model): # herencia de usermixin para permitir gesiton d
 
     def __repr__(self):
         return f'<User {self.username}>'
+
+    def is_admin(self):
+        """Devuelve True si el usuario  tiene el rol de asministrador"""
+        return self.role == 'admin'

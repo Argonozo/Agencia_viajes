@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Panel de Administración</h1>
+    <div class="row">
+        <!-- Card para mostrar el número de usuarios registrados -->
+        <div class="col-md-4">
+            <div class="card bg-primary text-white shadow-sm">
+                <div class="card-body">
+                    <h4>Usuarios Registrados</h4>
+                    <h2>{{ user_count }}</h2>
+                    <!-- Botón para ir a la gestión de usuarios -->
+                    <a href="{{ url_for('admin.users') }}" class="btn btn-light mt-3">Gestionar Usuarios</a>
+                </div>
+            </div>
+        </div>
+        <!-- Card para mostrar el número de destinos activos -->
+        <div class="col-md-4">
+            <div class="card bg-success text-white shadow-sm">
+                <div class="card-body">
+                    <h4>Destinos Activos</h4>
+                    <h2>{{ destination_count }}</h2>
+                    <!-- Botón para ir a la gestión de destinos -->
+                    <a href="{{ url_for('admin.manage_destinations') }}" class="btn btn-light mt-3">Gestionar Destinos</a>
+                </div>
+            </div>
+        </div>
+        <!-- Card para mostrar el número de paquetes disponibles -->
+        <div class="col-md-4">
+            <div class="card bg-warning text-white shadow-sm">
+                <div class="card-body">
+                    <h4>Paquetes Disponibles</h4>
+                    <h2>{{ package_count }}</h2>
+                    <!-- Botón para ir a la gestión de paquetes -->
+                    <a href="{{ url_for('travel.packages') }}" class="btn btn-light mt-3">Gestionar Paquetes</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

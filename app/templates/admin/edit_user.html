@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>Editar Usuario</h2>
+  <form method="POST">
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input type="text" class="form-control" name="username" value="{{ user.username }}" required>
+    </div>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" class="form-control" name="email" value="{{ user.email }}" required>
+    </div>
+    <div class="form-group">
+      <label for="role">Rol</label>
+      <select name="role" class="form-control">
+        <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Administrador</option>
+        <option value="client" {% if user.role == 'client' %}selected{% endif %}>Cliente</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="password">Contraseña</label>
+      <input type="password" class="form-control" name="password" placeholder="Deja vacío para no cambiarla">
+    </div>
+
+    <button type="submit" class="btn btn-warning">Actualizar Usuario</button>
+  </form>
+
+  <hr>
+
+  <h3>Reservas Asociadas</h3>
+  {% if reservations %}
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Destino</th>
+          <th>Paquete</th>
+          <th>Fecha de Viaje</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for reservation in reservations %}
+          <tr>
+            <td>{{ reservation.id }}</td>
+            <td>{{ reservation.destination.name if reservation.destination else 'N/A' }}</td>
+            <td>{{ reservation.package.name if reservation.package else 'N/A' }}</td>
+            <td>{{ reservation.travel_date }}</td>
+            <td>
+              <form action="{{ url_for('admin.delete_reservation', id=reservation.id) }}" method="POST" style="display:inline;">
+                <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No hay reservas asociadas a este usuario.</p>
+  {% endif %}
+{% endblock %}
