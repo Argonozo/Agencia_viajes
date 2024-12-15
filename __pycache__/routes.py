@@ -42,11 +42,11 @@ def dashboard():
         package_count=package_count
     )
 
-
 ###
 ###      CRUD       ###
 ###     Usuarios    ###
 ###
+
 # Ruta para listar todos los usuarios
 @admin.route('/users')
 @login_required
@@ -54,7 +54,7 @@ def users():
     users = User.query.all()  # Obtener todos los usuarios
     return render_template('admin/users.html', users=users)
 
-#
+
 # Ruta para crear un nuevo usuario
 @admin.route('/users/create', methods=['GET', 'POST'])
 @login_required
@@ -106,7 +106,6 @@ def delete_user(id):
 
     flash('Usuario eliminado exitosamente!', 'success')
     return redirect(url_for('admin.users'))
-
 
 ###
 ###      CRUD       ###
@@ -198,6 +197,12 @@ def delete_destination(id):
     return redirect(url_for('admin.manage_destinations'))
 
 
+
+###
+###      CRUD       ###
+###     reservas    ###
+###
+
 @admin.route('/reservations/delete/<int:id>', methods=['POST'])
 @login_required
 def delete_reservation(id):
@@ -220,86 +225,62 @@ def delete_reservation(id):
 ###      CRUD       ###
 ###     Paquetes   ###
 ###
-
-# Ruta para listar todos los paquetes
-@admin.route('/packages')
+@admin.route('/manage-packages', methods=['GET'])
 @login_required
 def manage_packages():
-    if current_user.role != 'admin':
-        flash('No tienes permiso para acceder a esta página.', 'danger')
-        return redirect(url_for('auth.login'))
+    # Aquí puedes agregar la lógica para listar o gestionar paquetes
+    return render_template('admin/manage_packages.html')
 
+
+# Ver la lista de paquetes
+@login_required
+def manage_packages():
     packages = Package.query.all()
+    return render_template('admin/manage_packages.html', packages=packages)
 
-    if not packages:
-        flash('No se encontraron paquetes turísticos.', 'warning')
-
-    return render_template('admin/packages.html', packages=packages)
-
-# Ruta para agregar un nuevo paquete
-@admin.route('/packages/add', methods=['GET', 'POST'])
+# Agregar paquete
 @login_required
 def add_package():
     form = PackageForm()
-    form.destinations.choices = [(d.id, d.name) for d in Destination.query.all()]
-    
-    if form.validate_on_submit():
-        # Asegurarse de que los campos de fecha estén siendo asignados
+
+    if request.method == 'POST' and form.validate_on_submit():
         package = Package(
             name=form.name.data,
             description=form.description.data,
-            price=form.price.data,
-            available_from=form.available_from.data,  # Asignar campo available_from
-            available_to=form.available_to.data       # Asignar campo available_to
+            cost=form.cost.data,
+            availability=form.availability.data,
+            destinations=form.destinations.data
         )
-        
-        # Asociar destinos seleccionados
-        package.destinations = Destination.query.filter(Destination.id.in_(form.destinations.data)).all()
-        
         db.session.add(package)
         db.session.commit()
+        flash('Paquete agregado exitosamente', 'success')
         return redirect(url_for('admin.manage_packages'))
     
     return render_template('admin/add_package.html', form=form)
 
-
-# Ruta para editar un paquete
-@admin.route('/packages/edit/<int:id>', methods=['GET', 'POST'])
+# Editar paquete
 @login_required
 def edit_package(id):
     package = Package.query.get_or_404(id)
     form = PackageForm(obj=package)
 
-    # Configurar opciones de destinos para el formulario
-    form.destinations.choices = [(d.id, d.name) for d in Destination.query.all()]
-
-    if form.validate_on_submit():
+    if request.method == 'POST' and form.validate_on_submit():
         package.name = form.name.data
         package.description = form.description.data
-        package.price = form.price.data
-        package.available_from = form.available_from.data  # Usar available_from
-        package.available_to = form.available_to.data  # Usar available_to
-
-        # Actualizar destinos asociados
-        package.destinations = Destination.query.filter(Destination.id.in_(form.destinations.data)).all()
-
+        package.cost = form.cost.data
+        package.availability = form.availability.data
+        package.destinations = form.destinations.data
         db.session.commit()
-        flash('Paquete turístico actualizado exitosamente.', 'success')
+        flash('Paquete actualizado exitosamente', 'success')
         return redirect(url_for('admin.manage_packages'))
-
-    # Preseleccionar destinos asociados al paquete
-    form.destinations.data = [d.id for d in package.destinations]
-
+    
     return render_template('admin/edit_package.html', form=form, package=package)
 
-
-# Ruta para eliminar un paquete
-@admin.route('/packages/delete/<int:id>', methods=['GET', 'POST'])
+# Eliminar paquete
 @login_required
 def delete_package(id):
-    if request.method == 'POST':
-        package = Package.query.get_or_404(id)
-        db.session.delete(package)
-        db.session.commit()
-        flash('Paquete turístico eliminado exitosamente.', 'success')
+    package = Package.query.get_or_404(id)
+    db.session.delete(package)
+    db.session.commit()
+    flash('Paquete eliminado exitosamente', 'success')
     return redirect(url_for('admin.manage_packages'))

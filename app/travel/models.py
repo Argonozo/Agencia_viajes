@@ -16,6 +16,12 @@ class Destination(db.Model):
         return f'<Destination {self.name}>'
 
 
+# Tabla intermedia
+package_destinations = db.Table('package_destinations',
+    db.Column('package_id', db.Integer, db.ForeignKey('packages.id'), primary_key=True),
+    db.Column('destination_id', db.Integer, db.ForeignKey('destinations.id'), primary_key=True)
+)
+
 class Package(db.Model):
     __tablename__ = 'packages'
     id = db.Column(db.Integer, primary_key=True)
@@ -25,8 +31,11 @@ class Package(db.Model):
     available_from = db.Column(db.Date, nullable=False)
     available_to = db.Column(db.Date, nullable=False)
 
-    # Relación inversa con Reservation, renombrando el backref para evitar conflicto
+    # Relación con Reservation
     reservations = db.relationship('Reservation', backref='package_related', lazy=True)
+
+    # Relación con Destination
+    destinations = db.relationship('Destination', secondary=package_destinations, backref=db.backref('packages', lazy='dynamic'))
 
     def __repr__(self):
         return f'<Package {self.name}>'
