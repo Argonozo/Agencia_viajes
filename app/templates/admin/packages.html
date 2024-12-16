@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Paquetes Turísticos</h1>
+<a href="{{ url_for('admin.add_package') }}" class="btn btn-success mb-3">Agregar Paquete</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Precio</th>
+            <th>Destinos</th>
+            <th>Disponible Desde</th> <!-- Nueva columna para fecha disponible desde -->
+            <th>Disponible Hasta</th> <!-- Nueva columna para fecha disponible hasta -->
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for package in packages %}
+        <tr>
+            <td>{{ package.id }}</td>
+            <td>{{ package.name }}</td>
+            <td>{{ package.description }}</td>
+            <td>${{ package.price }}</td>
+            <td>
+                {% for destination in package.destinations %}
+                    {{ destination.name }}{% if not loop.last %}, {% endif %}
+                {% endfor %}
+            </td>
+            <td>{{ package.available_from.strftime('%d-%m-%Y') }}</td> <!-- Mostrar la fecha de disponibilidad desde -->
+            <td>{{ package.available_to.strftime('%d-%m-%Y') }}</td> <!-- Mostrar la fecha de disponibilidad hasta -->
+            <td>
+                <a href="{{ url_for('admin.edit_package', id=package.id) }}" class="btn btn-warning btn-sm">Editar</a>
+                
+                <!-- Formulario para eliminar paquete -->
+                <form method="POST" action="{{ url_for('admin.delete_package', id=package.id) }}" style="display:inline;">
+                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar este paquete?');">Eliminar</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

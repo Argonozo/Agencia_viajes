@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Reservas{% endblock %}
+
+{% block content %}
+<h2 class="mt-4">Tus Reservas</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Destino</th>
+            <th>Paquete</th>
+            <th>Fecha de Viaje</th>
+            <th>Acción</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for reservation in reservations %}
+        <tr>
+            <td>{{ reservation.destination.name }}</td>
+            <td>{{ reservation.package.name }}</td>
+            <td>{{ reservation.travel_date }}</td>
+            <td>
+                <form method="POST" action="{{ url_for('travel.delete_reservation', id=reservation.id) }}">
+                    <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+<script>
+    // Función para mostrar la descripción del destino o paquete seleccionado
+    function showDescription(type) {
+        let id = document.getElementById(type).value;
+        let descriptionDiv = document.getElementById(type + '-description');
+        
+        if (id && id !== "none") {
+            // Realizamos la solicitud fetch para obtener la descripción
+            fetch('/get_' + type + '_description/' + id)
+                .then(response => response.json())
+                .then(data => {
+                    descriptionDiv.innerHTML = "<strong>Descripción:</strong> " + data.description;
+                })
+                .catch(error => {
+                    descriptionDiv.innerHTML = "No se pudo cargar la descripción.";
+                });
+        } else {
+            descriptionDiv.innerHTML = "";
+        }
+    }
+</script>
+
+{% endblock %}

@@ -1,0 +1,28 @@
+h1 {
+    color: rgb(220, 20, 60);; /* Color verde */
+    font-size: 36px; /* Tamaño de la fuente */
+    text-align: center; /* Centrar el texto */
+    font-family: 'Arial', sans-serif; /* Fuente personalizada */
+    font-weight: bold; /* Hacer el texto en negrita */
+}
+
+
+
+
+/* Aplicar fondo a todo el cuerpo de la página */
+body {
+    background-image: url("{{ url_for('static', filename='images/bosqueywea.jpg') }}");
+    background-size: cover;  /* Para que la imagen cubra toda la pantalla */
+    background-position: center; /* Centrar la imagen */
+    background-attachment: fixed; /* Hacer que el fondo sea fijo mientras se hace scroll */
+    height: 100vh; /* Asegura que el fondo cubra toda la altura de la ventana */
+    margin: 0; /* Eliminar márgenes predeterminados */
+    font-family: Arial, sans-serif; /* Establecer una fuente para el texto */
+}
+
+/* Si deseas que el contenido de la página tenga un color de fondo semitransparente para resaltar el texto */
+.container {
+    background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco con opacidad */
+    padding: 20px;
+    border-radius: 10px;
+}

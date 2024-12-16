@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">Destinos Disponibles</h1>
+    <div class="row mt-4">
+        {% for destination in destinations %}
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                
+                <div class="card-body">
+                    <h5 class="card-title">{{ destination.name }}</h5>
+                    <p class="card-text">{{ destination.description }}</p>
+                    <p><strong>Precio:</strong> ${{ destination.cost }}</p>
+                    
+                    {% if current_user.is_authenticated %}
+                        <!-- Botón Reservar -->
+                        <button 
+                            class="btn btn-primary" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#reserveModal{{ destination.id }}">
+                            Reservar
+                        </button>
+                    {% else %}
+                        <!-- Botón Registrarse -->
+                        <a href="{{ url_for('auth.register') }}" class="btn btn-success">
+                            Registrarse
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para Reservar (solo si el usuario está autenticado) -->
+        {% if current_user.is_authenticated %}
+        <div class="modal fade" id="reserveModal{{ destination.id }}" tabindex="-1" aria-labelledby="reserveModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form method="POST" action="{{ url_for('travel.reserve') }}">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="reserveModalLabel">Reservar: {{ destination.name }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" name="destination_id" value="{{ destination.id }}">
+                            <div class="mb-3">
+                                <label for="travel_date" class="form-label">Selecciona una fecha</label>
+                                <input type="date" class="form-control" name="travel_date" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Confirmar Reserva</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

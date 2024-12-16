@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Gestión de Destinos</h2>
+
+<a href="{{ url_for('admin.add_destination') }}" class="btn btn-primary mb-3">Agregar Nuevo Destino</a>
+
+{% if destinations %}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Actividades</th>
+            <th>Costo</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for destination in destinations %}
+        <tr>
+            <td>{{ destination.name }}</td>
+            <td>{{ destination.description }}</td>
+            <td>{{ destination.activities }}</td>
+            <td>${{ destination.cost }}</td>
+            <td>
+                <a href="{{ url_for('admin.edit_destination', id=destination.id) }}" class="btn btn-warning btn-sm">Editar</a>
+                
+                <form action="{{ url_for('admin.delete_destination', id=destination.id) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar este destino?')">Eliminar</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No hay destinos disponibles.</p>
+{% endif %}
+{% endblock %}

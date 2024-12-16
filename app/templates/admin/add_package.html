@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Agregar Nuevo Paquete</h1>
+<form method="POST" action="{{ url_for('admin.add_package') }}">
+    {{ form.hidden_tag() }}
+
+    <div class="form-group">
+        <label for="name">Nombre del Paquete</label>
+        {{ form.name(class="form-control", id="name") }}
+    </div>
+
+    <div class="form-group">
+        <label for="description">Descripción</label>
+        {{ form.description(class="form-control", id="description") }}
+    </div>
+
+    <div class="form-group">
+        <label for="price">Precio</label>
+        {{ form.price(class="form-control", id="price") }}
+    </div>
+
+    <div class="form-group">
+        <label for="destinations">Seleccionar Destinos</label>
+        {{ form.destinations(class="form-control", id="destinations", multiple=True) }}
+    </div>
+
+    <!-- Campo para "Disponible Desde" -->
+    <div class="form-group">
+        <label for="available_from">Disponible Desde</label>
+        {{ form.available_from(class="form-control", id="available_from") }}
+    </div>
+
+    <!-- Campo para "Disponible Hasta" -->
+    <div class="form-group">
+        <label for="available_to">Disponible Hasta</label>
+        {{ form.available_to(class="form-control", id="available_to") }}
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a href="{{ url_for('admin.manage_packages') }}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}
