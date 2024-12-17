@@ -1,8 +1,9 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, jsonify,request
 from flask_login import login_required, current_user
 from app.travel.models import Destination, Package, Reservation
-from app.travel.forms import ReservationForm
-from datetime import timedelta
+from app.travel.forms import ReservationForm,ReserveDestinationForm,ReservePackageForm
+from datetime import datetime
+from flask import jsonify
 from app import db
 
 
@@ -61,37 +62,64 @@ def get_destination_description(destination_id):
 
 
 
-@travel.route('/reserve_package', methods=['POST'])
+@travel.route('/reserve_package', methods=['GET', 'POST'])
 @login_required
 def reserve_package():
-    package_id = request.form.get('package')
-    travel_date = request.form.get('travel_date_pack')
-    if package_id and travel_date:
-        new_reservation = Reservation(
+    form = ReservePackageForm()
+    
+    # Obtener los paquetes disponibles desde la base de datos
+    packages = Package.query.all()
+    form.package.choices = [(package.id, package.name) for package in packages]
+    
+    if form.validate_on_submit():
+        # Obtener el ID del paquete seleccionado
+        package_id = form.package.data
+        travel_date = form.travel_date.data
+        
+        # Crear y guardar la reserva (como se explicó anteriormente)
+        reservation = Reservation(
             user_id=current_user.id,
             package_id=package_id,
-            travel_date=travel_date
+            travel_date=travel_date,
+            created_at=datetime.utcnow()
         )
-        db.session.add(new_reservation)
-        db.session.commit()
-        flash('¡Reserva de paquete creada correctamente!', 'success')
-    else:
-        flash('Por favor selecciona un paquete y una fecha válida.', 'danger')
-    return redirect(url_for('travel.reserve'))
+        
+        try:
+            db.session.add(reservation)
+            db.session.commit()
+            flash("Reserva realizada con éxito", "success")
+            return redirect(url_for('travel.reserve'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f"Hubo un error al realizar la reserva: {str(e)}", "danger")
+    
+    return render_template('travel/reserve.html', form=form)
 
 
 
+
+
+
+
+from datetime import timedelta
 
 @travel.route('/get_package_dates/<int:package_id>', methods=['GET'])
 def get_package_dates(package_id):
+    # Obtener el paquete por ID
     package = Package.query.get(package_id)
+
     if package:
-        start_date = package.available_from
-        end_date = package.available_to
-        delta = (end_date - start_date).days
-        dates = [(start_date + timedelta(days=i)).strftime('%Y-%m-%d') for i in range(delta + 1)]
-        return {'dates': dates}, 200
-    return {'dates': []}, 404
+        print(f"Paquete encontrado: {package.name}, Fechas: {package.available_from} - {package.available_to}")
+        
+        # Crear el rango de fechas en el formato correcto
+        date_range = f"{package.available_from.strftime('%Y-%m-%d')} - {package.available_to.strftime('%Y-%m-%d')}"
+        print(f"Fechas enviadas al frontend: {date_range}")  # Mostrar la fecha para depuración
+        
+        return jsonify([date_range])  # Devuelve el rango de fechas como JSON
+    else:
+        print(f"Paquete no encontrado: {package_id}")
+        return jsonify([])  # Si no se encuentra el paquete, devuelve una lista vacía
+
 
 
 
@@ -108,6 +136,25 @@ def packages():
     packages = Package.query.all()
     return render_template('travel/packages.html', packages=packages)
 
+
+@travel.route('/reserve/destination', methods=['GET', 'POST'])
+@login_required
+def reserve_destination():
+    form = ReserveDestinationForm()
+    form.destination.choices = [(d.id, d.name) for d in Destination.query.all()]
+
+    if form.validate_on_submit():
+        new_reservation = Reservation(
+            user_id=current_user.id,
+            destination_id=form.destination.data,
+            travel_date=form.travel_date.data
+        )
+        db.session.add(new_reservation)
+        db.session.commit()
+        flash('¡Reserva de destino creada correctamente!', 'success')
+        return redirect(url_for('travel.reserve'))
+
+    return render_template('reserve', form=form)
 
 @travel.route('/destinations')
 def destinations():

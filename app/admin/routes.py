@@ -100,10 +100,16 @@ def edit_user(id):
 @admin.route('/users/delete/<int:id>', methods=['POST'])
 @login_required
 def delete_user(id):
-    user = User.query.get_or_404(id)
+    user = User.query.get_or_404(id)  # Obtener el usuario o devolver error 404
+    
+    # Verificar si el usuario tiene reservas asociadas
+    if user.reservations:
+        flash('El usuario tiene reservas asociadas. Elimine las reservas primero y vuelva a intentarlo.', 'warning')
+        return redirect(url_for('admin.users'))  # Redirigir a la página de gestión de usuarios
+    
+    # Si no tiene reservas, proceder con la eliminación
     db.session.delete(user)
     db.session.commit()
-
     flash('Usuario eliminado exitosamente!', 'success')
     return redirect(url_for('admin.users'))
 
@@ -198,21 +204,6 @@ def delete_destination(id):
     return redirect(url_for('admin.manage_destinations'))
 
 
-@admin.route('/reservations/delete/<int:id>', methods=['POST'])
-@login_required
-def delete_reservation(id):
-    reservation = Reservation.query.get_or_404(id)
-    
-    # Verificar si el usuario actual tiene permisos para eliminar
-    if current_user.role != 'admin':
-        flash('No tienes permiso para eliminar esta reserva.', 'danger')
-        return redirect(request.referrer or url_for('admin.users'))
-
-    # Proceder a eliminar la reserva si el usuario es administrador
-    db.session.delete(reservation)
-    db.session.commit()
-    flash('Reserva eliminada exitosamente.', 'success')
-    return redirect(request.referrer or url_for('admin.users'))
 
 
 
@@ -303,3 +294,23 @@ def delete_package(id):
         db.session.commit()
         flash('Paquete turístico eliminado exitosamente.', 'success')
     return redirect(url_for('admin.manage_packages'))
+
+
+
+######  ELIMINAR RESERVACION (SOLO ADMIN)!!!
+
+@admin.route('/reservations/delete/<int:id>', methods=['POST'])
+@login_required
+def delete_reservation(id):
+    reservation = Reservation.query.get_or_404(id)
+    
+    # Verificar si el usuario actual tiene permisos para eliminar
+    if current_user.role != 'admin':
+        flash('No tienes permiso para eliminar esta reserva.', 'danger')
+        return redirect(request.referrer or url_for('admin.users'))
+
+    #  eliminar la reserva si el usuario es administrador
+    db.session.delete(reservation)
+    db.session.commit()
+    flash('Reserva eliminada exitosamente.', 'success')
+    return redirect(request.referrer or url_for('admin.users'))

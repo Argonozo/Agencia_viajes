@@ -16,3 +16,12 @@ class PackageForm(FlaskForm):
     available_from = DateField('Disponible Desde', format='%Y-%m-%d')
     available_to = DateField('Disponible Hasta', format='%Y-%m-%d')
     submit = SubmitField('Guardar')
+
+class ReserveDestinationForm(FlaskForm):
+    destination = SelectField('Destino', coerce=int, validators=[DataRequired()])
+    travel_date = DateField('Fecha de Viaje', format='%Y-%m-%d', validators=[DataRequired()])
+    submit = SubmitField('Reservar Destino')
+
+class ReservePackageForm(FlaskForm):
+    package = SelectField('Paquete', choices=[])
+    travel_date = DateField('Fecha de viaje', validators=[DataRequired()])

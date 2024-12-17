@@ -9,7 +9,7 @@
         <!-- Reservar Destino -->
         <div class="col-md-6">
             <h4>Reservar Destino</h4>
-            <form method="POST" action="{{ url_for('travel.reserve') }}">
+            <form method="POST" action="{{ url_for('travel.reserve_destination') }}">
                 {{ form.hidden_tag() }}
                 <div class="mb-3">
                     <label for="destination" class="form-label">Selecciona un destino</label>
@@ -27,7 +27,7 @@
         <!-- Reservar Paquete -->
         <div class="col-md-6">
             <h4>Reservar Paquete</h4>
-            <form method="POST" action="{{ url_for('travel.reserve') }}">
+            <form method="POST" action="{{ url_for('travel.reserve_package') }}">
                 {{ form.hidden_tag() }}
                 <div class="mb-3">
                     <label for="package" class="form-label">Selecciona un paquete</label>
@@ -35,10 +35,9 @@
                     <div id="package-description" class="mt-2"></div>
                 </div>
                 <div class="mb-3">
-                    <label for="travel_date_pack" class="form-label">Selecciona una fecha</label>
-                    <select class="form-select" id="travel_date_pack" name="travel_date">
-                        <option value="">Selecciona un paquete primero</option>
-                    </select>
+                    <label for="travel_date_pack" class="form-label">Selecciona una fecha entre:</label>
+                    <div id="date-range"></div>
+                    <input type="date" id="travel_date_pack" class="form-control" name="travel_date">
                 </div>
                 <button type="submit" class="btn btn-success">Reservar Paquete</button>
             </form>
@@ -74,49 +73,40 @@
 </div>
 
 <script>
-    // Mostrar descripción de destinos o paquetes
-    function showDescription(type) {
-        let id = document.getElementById(type).value;
-        let descriptionDiv = document.getElementById(type + '-description');
-        
-        if (id && id !== "none") {
-            fetch('/get_' + type + '_description/' + id)
-                .then(response => response.json())
-                .then(data => {
-                    descriptionDiv.innerHTML = "<strong>Descripción:</strong> " + data.description;
-                })
-                .catch(error => {
-                    descriptionDiv.innerHTML = "No se pudo cargar la descripción.";
-                });
-        } else {
-            descriptionDiv.innerHTML = "";
-        }
-    }
-
-    // Cargar fechas disponibles para paquetes
     function loadAvailableDates() {
-        let packageId = document.getElementById('package').value;
-        let dateSelect = document.getElementById('travel_date_pack');
-        dateSelect.innerHTML = '<option value="">Cargando fechas...</option>';
-        
-        if (packageId && packageId !== "none") {
-            fetch('/get_package_dates/' + packageId)
-                .then(response => response.json())
-                .then(data => {
-                    dateSelect.innerHTML = '<option value="">Selecciona una fecha disponible</option>';
-                    data.dates.forEach(date => {
-                        let option = document.createElement('option');
-                        option.value = date;
-                        option.textContent = date;
-                        dateSelect.appendChild(option);
-                    });
-                })
-                .catch(error => {
-                    dateSelect.innerHTML = '<option value="">No se pudieron cargar las fechas</option>';
-                });
-        } else {
-            dateSelect.innerHTML = '<option value="">Selecciona un paquete primero</option>';
-        }
+    let packageId = document.getElementById('package').value;
+    
+    if (packageId && packageId !== "none") {
+        fetch('/reserve/get_package_dates/' + packageId)
+            .then(response => response.json())
+            .then(data => {
+                if (data.length > 0) {
+                    let dateRange = data[0].split(' - ');  // Obtenemos el rango de fechas (e.g., ["2024-06-01", "2024-12-31"])
+                    let availableFrom = dateRange[0]; // Fecha inicial
+                    let availableTo = dateRange[1];   // Fecha final
+
+                    // Mostrar el rango de fechas en el frontend
+                    document.getElementById('date-range').innerHTML = `Selecciona una fecha entre: ${availableFrom} y ${availableTo}`;
+
+                    // Configurar el campo de fecha para que esté entre las fechas disponibles
+                    let travelDateInput = document.getElementById('travel_date_pack');
+                    travelDateInput.min = availableFrom; // Fecha mínima
+                    travelDateInput.max = availableTo;   // Fecha máxima
+                } else {
+                    document.getElementById('date-range').innerHTML = 'No hay fechas disponibles.';
+                    document.getElementById('travel_date_pack').value = '';  // Vaciar el campo si no hay fechas
+                }
+            })
+            .catch(error => {
+                console.error('Error al cargar las fechas:', error);
+                document.getElementById('date-range').innerHTML = 'No se pudieron cargar las fechas.';
+            });
+    } else {
+        document.getElementById('date-range').innerHTML = '';
+        document.getElementById('travel_date_pack').value = '';  // Vaciar el campo si no hay paquete seleccionado
     }
+}
+
 </script>
+
 {% endblock %}

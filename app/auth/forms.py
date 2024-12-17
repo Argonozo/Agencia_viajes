@@ -3,9 +3,12 @@ from wtforms import StringField, PasswordField, SubmitField,EmailField,TextAreaF
 from wtforms.validators import DataRequired, Email, EqualTo, Length
 
 class EditProfileForm(FlaskForm):
-    name = StringField('Nombre', validators=[DataRequired(), Length(max=50)])
+    username = StringField('Nombre', validators=[DataRequired(), Length(max=50)])
     email = StringField('Correo electrónico', validators=[DataRequired(), Email(), Length(max=120)])
     about_me = TextAreaField('Sobre mí', validators=[Length(max=200)])
+    password = PasswordField('Nueva contraseña', validators=[Length(min=6, max=50)])
+    confirm_password = PasswordField('Confirmar contraseña', 
+                                     validators=[EqualTo('password', message='Las contraseñas deben coincidir')])
     submit = SubmitField('Actualizar')
     
 class LoginForm(FlaskForm):
