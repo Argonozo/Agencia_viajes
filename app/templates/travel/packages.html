@@ -11,6 +11,17 @@
                     <h5 class="card-title">{{ package.name }}</h5>
                     <p class="card-text">{{ package.description }}</p>
                     <p class="card-text"><strong>Precio:</strong> ${{ package.price }}</p>
+                    {% if current_user.is_authenticated %}
+                        <!-- Botón Reservar Destino -->
+                        <a href="{{ url_for('travel.reserve', package_id=package.id) }}" class="btn btn-primary">
+                            Reservar Destino
+                        </a>
+                    {% else %}
+                        <!-- Botón Registrarse -->
+                        <a href="{{ url_for('auth.register') }}" class="btn btn-success">
+                            Registrarse
+                        </a>
+                    {% endif %}
                 </div>
             </div>
         </div>

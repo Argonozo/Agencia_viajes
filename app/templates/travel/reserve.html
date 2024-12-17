@@ -3,41 +3,83 @@
 {% block title %}Reservas{% endblock %}
 
 {% block content %}
-<h2 class="mt-4">Tus Reservas</h2>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Destino</th>
-            <th>Paquete</th>
-            <th>Fecha de Viaje</th>
-            <th>Acción</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for reservation in reservations %}
-        <tr>
-            <td>{{ reservation.destination.name }}</td>
-            <td>{{ reservation.package.name }}</td>
-            <td>{{ reservation.travel_date }}</td>
-            <td>
-                <form method="POST" action="{{ url_for('travel.delete_reservation', id=reservation.id) }}">
-                    <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="container mt-4">
+    <h2 class="text-center">Reservar Destino o Paquete</h2>
+    <div class="row">
+        <!-- Reservar Destino -->
+        <div class="col-md-6">
+            <h4>Reservar Destino</h4>
+            <form method="POST" action="{{ url_for('travel.reserve') }}">
+                {{ form.hidden_tag() }}
+                <div class="mb-3">
+                    <label for="destination" class="form-label">Selecciona un destino</label>
+                    {{ form.destination(class="form-select", id="destination", onchange="showDescription('destination')") }}
+                    <div id="destination-description" class="mt-2"></div>
+                </div>
+                <div class="mb-3">
+                    <label for="travel_date_dest" class="form-label">Fecha de viaje</label>
+                    {{ form.travel_date(class="form-control", id="travel_date_dest") }}
+                </div>
+                <button type="submit" class="btn btn-primary">Reservar Destino</button>
+            </form>
+        </div>
 
+        <!-- Reservar Paquete -->
+        <div class="col-md-6">
+            <h4>Reservar Paquete</h4>
+            <form method="POST" action="{{ url_for('travel.reserve') }}">
+                {{ form.hidden_tag() }}
+                <div class="mb-3">
+                    <label for="package" class="form-label">Selecciona un paquete</label>
+                    {{ form.package(class="form-select", id="package", onchange="loadAvailableDates()") }}
+                    <div id="package-description" class="mt-2"></div>
+                </div>
+                <div class="mb-3">
+                    <label for="travel_date_pack" class="form-label">Selecciona una fecha</label>
+                    <select class="form-select" id="travel_date_pack" name="travel_date">
+                        <option value="">Selecciona un paquete primero</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-success">Reservar Paquete</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Reservas existentes -->
+    <h2 class="mt-5">Tus Reservas</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Destino</th>
+                <th>Paquete</th>
+                <th>Fecha de Viaje</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for reservation in reservations %}
+            <tr>
+                <td>{{ reservation.destination.name if reservation.destination }}</td>
+                <td>{{ reservation.package.name if reservation.package }}</td>
+                <td>{{ reservation.travel_date }}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('travel.delete_reservation', id=reservation.id) }}">
+                        <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
 <script>
-    // Función para mostrar la descripción del destino o paquete seleccionado
+    // Mostrar descripción de destinos o paquetes
     function showDescription(type) {
         let id = document.getElementById(type).value;
         let descriptionDiv = document.getElementById(type + '-description');
         
         if (id && id !== "none") {
-            // Realizamos la solicitud fetch para obtener la descripción
             fetch('/get_' + type + '_description/' + id)
                 .then(response => response.json())
                 .then(data => {
@@ -50,6 +92,31 @@
             descriptionDiv.innerHTML = "";
         }
     }
-</script>
 
+    // Cargar fechas disponibles para paquetes
+    function loadAvailableDates() {
+        let packageId = document.getElementById('package').value;
+        let dateSelect = document.getElementById('travel_date_pack');
+        dateSelect.innerHTML = '<option value="">Cargando fechas...</option>';
+        
+        if (packageId && packageId !== "none") {
+            fetch('/get_package_dates/' + packageId)
+                .then(response => response.json())
+                .then(data => {
+                    dateSelect.innerHTML = '<option value="">Selecciona una fecha disponible</option>';
+                    data.dates.forEach(date => {
+                        let option = document.createElement('option');
+                        option.value = date;
+                        option.textContent = date;
+                        dateSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    dateSelect.innerHTML = '<option value="">No se pudieron cargar las fechas</option>';
+                });
+        } else {
+            dateSelect.innerHTML = '<option value="">Selecciona un paquete primero</option>';
+        }
+    }
+</script>
 {% endblock %}
