@@ -136,7 +136,7 @@ def packages():
     packages = Package.query.all()
     return render_template('travel/packages.html', packages=packages)
 
-
+#ruta para reservar destino
 @travel.route('/reserve/destination', methods=['GET', 'POST'])
 @login_required
 def reserve_destination():

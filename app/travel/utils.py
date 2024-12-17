@@ -1,3 +1,4 @@
+#no se usó
 from app.travel.models import Destination, Package, Booking
 from app import db
 

@@ -57,7 +57,7 @@ class Reservation(db.Model):
     # Relación con Package (opcional, ya que package_id es nullable)
     package = db.relationship('Package', backref='reservations_related', lazy=True)
 
-    # Relación con User (modificada la propiedad backref)
+    # Relación con User 
     user = db.relationship('User', backref='user_reservations', lazy=True)
 
     def __repr__(self):
