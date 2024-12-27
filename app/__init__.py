@@ -16,12 +16,7 @@ def create_app():
     db.init_app(app)  # Inicializar la base de datos
     login_manager.init_app(app)  # Inicializar Flask-Login
     
-    # Definir el user_loader
-    @login_manager.user_loader
-    def load_user(user_id):
-        from app.auth.models import User  # Importación aquí para evitar el ciclo
-        return User.query.get(int(user_id))  # Buscar al usuario por su ID
-
+    
     # Registrar Blueprints
     from app.auth.routes import auth
     app.register_blueprint(auth, url_prefix='/auth')  # Usar '/auth' como prefijo
