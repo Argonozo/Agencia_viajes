@@ -76,7 +76,7 @@ def reserve_package():
         package_id = form.package.data
         travel_date = form.travel_date.data
         
-        # Crear y guardar la reserva (como se explicó anteriormente)
+        # Crear y guardar la reserva 
         reservation = Reservation(
             user_id=current_user.id,
             package_id=package_id,
