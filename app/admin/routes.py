@@ -63,8 +63,7 @@ def create_user():
         # Alos datos del formulario
         username = request.form['username']
         email = request.form['email']
-        password = request.form['password']  # Asegúrate de encriptar la contraseña
-
+        password = request.form['password']  
         new_user = User(username=username, email=email, password=password)
         db.session.add(new_user)
         db.session.commit()
